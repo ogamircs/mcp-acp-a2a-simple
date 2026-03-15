@@ -2,8 +2,6 @@
 
 A collection of Google Colab notebooks demonstrating three different protocols for building AI agent systems — all using the **same travel research use case** for easy comparison. Each notebook builds a multi-agent travel advisory that combines weather forecasts, country profiles, and public holiday data from free public APIs.
 
-Built for the **UT Austin McCombs / Great Learning** _Generative AI for Business Applications_ course.
-
 ---
 
 ## Notebooks
