@@ -1,6 +1,6 @@
-# Multi-Protocol AI Agent Notebooks
+# AI Agent & LLMOps Notebooks
 
-A collection of Google Colab notebooks demonstrating three different protocols for building AI agent systems — all using the **same travel research use case** for easy comparison. Each notebook builds a multi-agent travel advisory that combines weather forecasts, country profiles, and public holiday data from free public APIs.
+A collection of Google Colab notebooks covering **AI agent protocols** and **LLMOps practices**. The first three notebooks demonstrate different agent communication protocols using the same travel research use case for easy comparison. The fourth notebook demonstrates a complete LLMOps lifecycle with an intelligent agent.
 
 ---
 
@@ -131,6 +131,61 @@ A2A is the **industry-standard** protocol for agent-to-agent communication, back
 
 ---
 
+### 4. `LLMOps/LLMOps_Agent_Pipeline.ipynb` — LLMOps with Agent-Based RAG
+
+**Topic:** End-to-end LLMOps lifecycle using an intelligent agent over LLM security research papers
+
+**What it teaches:**
+This notebook builds a complete **LLMOps pipeline** — from data ingestion to model monitoring — using an agent that can search, summarize, and reason across multiple research papers. It maps every component of the LLMOps architecture (data processing, embeddings, prompt engineering, model versioning, monitoring, and human feedback) to a working implementation.
+
+**Architecture:**
+```
+┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+│  PDF Papers  │ ─► │  Chunking &  │ ─► │   ChromaDB   │ ─► │  LangChain   │
+│  (4 papers)  │    │  Embeddings  │    │  (vectors)   │    │    Agent     │
+└──────────────┘    └──────────────┘    └──────────────┘    └──────┬───────┘
+                                                                   │
+                                              ┌────────────────────┼────────────────────┐
+                                              │                    │                    │
+                                        document_search    summarize_section      reasoning
+                                              │                    │                    │
+                                              └────────────────────┼────────────────────┘
+                                                                   │
+                                                     ┌─────────────┴─────────────┐
+                                                     │  MLflow Tracing + RAGAS   │
+                                                     │  Prefect Orchestration    │
+                                                     └───────────────────────────┘
+```
+
+**How it works:**
+- **Data pipeline**: Loads 4 LLM security research papers (PDFs), chunks them with token-aware splitting, and embeds into ChromaDB
+- **Agent with 3 tools**: `document_search` (RAG retrieval), `summarize_section` (retrieval + summarization), `reasoning` (analytical cross-paper analysis)
+- **Prompt versioning**: Multiple prompt versions (v1–v5) tracked in MLflow to measure how prompt engineering affects agent behavior
+- **Monitoring**: MLflow 3.10.x `autolog()` traces every tool call, LLM invocation, and reasoning step automatically
+- **Evaluation**: RAGAS metrics (faithfulness, relevancy) score each agent response
+- **Human feedback**: RLHF-pattern feedback collection logged alongside agent runs
+- **Orchestration**: Prefect `@flow`/`@task` decorators make the pipeline reproducible
+
+**Research papers used:**
+| Paper | Topic |
+|-------|-------|
+| Pankajakshan et al. (2024) | OWASP risk assessment for LLMs |
+| Greshake et al. (2023) | Indirect prompt injection attacks |
+| Chen et al. (2025) | AI Safety — Trustworthy, Responsible, and Safe AI |
+| Inan et al. (2023) | Llama Guard — LLM-based safeguard model |
+
+**Key concepts covered:**
+- LLMOps vs MLOps lifecycle comparison
+- Agent-based RAG vs fixed RAG chains
+- Prompt engineering as the LLMOps equivalent of hyperparameter tuning
+- MLflow experiment tracking, tracing, and artifact logging
+- RAGAS evaluation metrics
+- Semantic drift monitoring
+
+**Dependencies:** `mlflow==3.10.1`, `langchain`, `langchain-openai`, `chromadb`, `pymupdf`, `ragas`, `prefect`
+
+---
+
 ## Protocol Comparison
 
 | | **MCP** | **ACP** | **A2A** |
@@ -150,7 +205,7 @@ All three are **complementary**: use MCP inside agents for tool access, A2A or A
 
 ## Demo Queries
 
-Each notebook runs the same four progressive demos for easy comparison:
+The three agent protocol notebooks run the same four progressive demos for easy comparison:
 
 | # | Query | Skills/Tools Used |
 |---|-------|-------------------|
@@ -186,7 +241,7 @@ The `config.json` format (if providing credentials via file):
 
 ## LLM Configuration
 
-All notebooks use `langchain-openai` with `ChatOpenAI` configured for `gpt-4o-mini`. The `load_openai_config()` function searches for credentials in this order:
+The agent protocol notebooks use `langchain-openai` with `ChatOpenAI` configured for `gpt-4o-mini`. The LLMOps notebook uses `gpt-5-mini`. All notebooks search for credentials in this order:
 
 1. `config.json` in the working directory
 2. Environment variables (`OPENAI_API_KEY`, `OPENAI_API_BASE`)
